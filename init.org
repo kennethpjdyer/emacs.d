@@ -1,0 +1,241 @@
+#+Title: Emacs Initialization File, written in org-mode
+#+AUTHOR: Kenneth P. J. Dyer
+#+LANGUAGE: en
+#+STARTUP: indent
+#+OPTIONS: H:3 num:nil toc:t \n:nil @:t | :t ^:nil -:t f:t *:t
+#+OPTIONS: TeX:t LaTeX:t skip:nil d:nil todo:t pri:nil tags:not-in-toc
+:PROPERTIES:
+:tangle: "~/.emacs.d/init.el"
+
+* Base Interface
+** Appearance
+*** Line Spacing
+Sets the default line height:
+#+BEGIN_SRC emacs-lisp
+(setq default-line-spacing 15)
+#+END_SRC
+*** Line Numbers
+Set Line Numbers to always display in every buffer:
+#+BEGIN_SRC emacs-lisp
+(global-linum-mode 1)
+#+END_SRC
+** Keyboard and Mouse
+*** Macros
+**** Reload Initialization File
+#+BEGIN_SRC emacs-lisp 
+(global-set-key (kbd "C-c i") (lambda()
+      (interactive)
+      (org-babel-load-file "~/.emacs.d/init.org")
+))
+#+END_SRC
+
+**** Org: Native Tabs
+#+BEGIN_SRC emacs-lisp  
+(setq org-src-tab-acts-natively t)
+#+END_SRC
+
+*** Mouse
+Enable Up and Down buttons on Gaming Mouse
+
+#+BEGIN_SRC emacs-lisp
+;; Set Mouse Buttons
+(global-set-key (kbd "<mouse-9>") 'next-buffer)
+(global-set-key (kbd "<mouse-8>") 'previous-buffer)
+#+END_SRC
+
+* Package Management
+
+Enable Package Management
+
+#+BEGIN_SRC emacs-lisp
+(require 'package)
+#+END_SRC
+
+** Enable Repositories
+
+*** Melpa
+#+BEGIN_SRC emacs-lisp
+(add-to-list 'package-archives '("melpa" . "http://melpa.milkbox.net/packages/") t)
+#+END_SRC
+
+*** Org
+#+BEGIN_SRC emacs-lisp
+(add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t)
+#+END_SRC
+
+*** GNU
+#+BEGIN_SRC emacs-lisp
+(add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/") t)
+#+END_SRC
+
+* Major Mode Configurations
+** ReStructuredText
+
+*** RST Adornments
+
+#+BEGIN_SRC emacs-lisp
+(setq rst-preferred-adornments
+      '( (35 over-and-under 0) ; ?#
+         (42 over-and-under 0) ; ? #*
+         (61 over-and-under 0) ; ? #=
+         (45 over-and-under 0) ; ? #-
+         (94 over-and-under 0) ; ? #^
+         (34 over-and-under 0) ; ? #"
+))
+#+END_SRC
+
+
+*** Minor Modes
+#+BEGIN_SRC emacs-lisp
+
+;; reST hook to start minor modes
+(add-hook 'rst-mode-hook
+	  '(lambda ()
+	     (flyspell-mode)
+	     (visual-line-mode)
+	     (adaptive-wrap-prefix-mode nil)
+	     (if (fboundp 'modtime-skip-mode
+			  (setq modtime-skip-mode t) ))
+))
+
+#+END_SRC
+
+** Markdown
+
+Automatically Load Markdown
+#+BEGIN_SRC: emacs-lisp
+(autoload 'markdown-mode "markdown-mode"
+          "Major mode for editing Markdown files.")
+#+END_SRC
+
+Define the Files that use Markdown Mode
+#+BEGIN_SRC: emacs-lisp
+(setq auto-mode-alist (append '(
+      ("\\.text\\'" . markdown-mode)
+      ("\\.markdown\\'" . markdown-mode)
+      ("\\.md\\'" . markdown-mode) auto-mode-alist)))
+      
+#+END_SRC
+
+*** Minor Modes
+
+Loads various minor modes by default when markdown-mode starts.
+
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'markdown-mode-hook
+          '(lambda() 
+              (flyspell-mode)
+              (visual-line-mode)
+              (adaptive-wrap-prefix-mode nil)
+              (if (fboundp 'modtime-skip-mode
+                    (setq modtime-skip-mode t
+                          )))))
+
+#+END_SRC
+
+** Fundamental Mode
+*** Minor Modes
+
+#+BEGIN_SRC emacs-lisp
+
+;; Fundamental Mode Hook
+(add-hook 'fundamental-mode-hook
+	  '(lambda ()
+	     (flyspell-mode)
+	     (visual-line-mode)
+	     (if (fboundp 'modtime-skip-mode
+			  (setq modtime-skip-mode t) ))
+	     ))
+#+END_SRC
+
+** NXML Mode
+*** Minor Modes
+
+#+BEGIN_SRC emacs-lisp
+;; XML Mode Hook
+(add-hook 'nxml-mode-hook
+	  '(lambda ()
+	     (flyspell-mode)
+	     (visual-line-mode)
+	     (adaptive-wrap-prefix-mode nil)
+	     (modtime-skip-mode t)))
+
+#+END_SRC
+
+** Org Mode
+
+*** Fontify Prettily
+#+BEGIN_SRC emacs-lisp
+(setq org-src-fontify-prettily t)
+#+END_SRC
+
+
+*** Babel Indent
+
+Need some code here to indent code blocks, allowing me to break up Python functions and methods.
+
+* General Functions
+** Handler for Hashbangs
+
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'after-save-hook
+            'executable-make-buffer-file-executable-if-script-p)
+#+END_SRC
+
+#+RESULTS:
+
+
+* Old Config
+#+BEGIN_SRC emacs-lisp
+;; Emacs Configuration File
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; General Configurations
+
+;; Disable Toolbar
+(setq tool-bar-mode -1)
+
+;; Manage Spell
+;(setq ispell-program-name "/usr/bin/aspell")
+
+;; Load Abbrev Table
+(load-file "~/.emacs.d/abbrev.el")
+
+;; Customization File
+(setq custom-file "~/.emacs.d/custom.el")  
+(load custom-file)
+
+;; Abbrev File
+(setq abbrev-file-name
+      "~/.emacs.d/abbrev_defs")
+(setq save-abbrevs t)
+
+;; Buffer Modification
+
+;; Package Management
+(require 'package)
+(add-to-list 'package-archives
+	     '("melpa" . "http://melpa.milkbox.net/packages/" ) t)
+(package-initialize);; DBus support
+(require 'dbus)
+
+
+
+
+
+
+
+;; Org-mode
+(add-hook 'org-mode-hook
+	  '(lambda ()
+	     (flyspell-mode)
+	     (visual-line-mode)
+	     (adaptive-wrap-prefix-mode nil)
+	     (if (fboundp 'modtime-skip-mode
+			  (setq modtime-skip-mode t) ))
+	     ))
+(setq org-agenda-files (list "~/Documents/Journal/main.org"))
+
+(setq org-clock-persist 'history)
+(org-clock-persistence-insinuate)
+#+END_SRC
+
