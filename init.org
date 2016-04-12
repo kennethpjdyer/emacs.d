@@ -166,13 +166,21 @@ Loads various minor modes by default when markdown-mode starts.
 
 *** Fontify Prettily
 #+BEGIN_SRC emacs-lisp
-(setq org-src-fontify-prettily t)
+  (setq org-src-fontify-natively t)
+  (org-block-begin-line
+   ((t (:underline "#A7A6AA" :foreground "#008ED1" :background "#EAEAFF"))))
+  (org-block-background
+   ((t (:background "#FFFFEA"))))
+  (org-block-end-line
+   ((t (:overline "#A7A6AA" :foreground "#008ED1" :background "#EAEAFF"))))
 #+END_SRC
 
 
 *** Babel Indent
 
 Need some code here to indent code blocks, allowing me to break up Python functions and methods.
+
+* Minor Mode Configurations
 
 * General Functions
 ** Handler for Hashbangs
